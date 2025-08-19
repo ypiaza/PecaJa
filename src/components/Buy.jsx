@@ -39,7 +39,7 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
   return (
     <div
       onClick={() => setIsActive(false)}
-      className={`absolute inset-0 flex items-center justify-center pt-13 ${isActive || confirm ? '' : 'hidden'
+      className={`absolute inset-0 flex items-center justify-center pt-15 ${isActive || confirm ? '' : 'hidden'
         }`}
     >
       {/* Modal de Itens */}
@@ -50,7 +50,7 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
       >
         <span
           onClick={() => setIsActive(false)}
-          className="font-bold text-2xl absolute top-3 right-3"
+          className="font-bold text-3xl absolute top-6 right-6"
         >
           <CgClose />
         </span>
