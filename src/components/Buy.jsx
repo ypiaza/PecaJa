@@ -39,13 +39,13 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
   return (
     <div
       onClick={() => setIsActive(false)}
-      className={`absolute inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-5 ${isActive || confirm ? '' : 'hidden'
+      className={`absolute inset-0 flex items-center justify-center pt-13 ${isActive || confirm ? '' : 'hidden'
         }`}
     >
       {/* Modal de Itens */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`bg-white h-[70%] w-full px-4 py-10 rounded-2xl relative flex items-center flex-col justify-evenly ${!confirm ? '' : 'hidden'
+        className={`bg-white h-full w-full rounded-t-2xl relative grid grid-cols-1 grid-rows-2 ${!confirm ? '' : 'hidden'
           }`}
       >
         <span
@@ -55,17 +55,17 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
           <CgClose />
         </span>
 
-        <div>
-          <p className="font-bold">Itens:</p>
+        <div className='flex flex-col items-start justify-evenly w-full p-10'>
+          <p className="font-bold text-2xl">Pedido:</p>
           {totalItens.length === 0
             ? 'Nenhum item selecionado'
             : totalItens.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between mb-1"
+                className="flex items-center justify-between w-full mb-1"
               >
-                <p>{item.quantidade || 1} x {item.nome}</p>
-                <span>
+                <p className='font-bold text-xl'>{item.quantidade || 1} x {item.nome}</p>
+                <span className='font-bold text-xl'>
                   R$ {(item.preco * (item.quantidade || 1))
                     .toFixed(2)
                     .replace('.', ',')}
@@ -73,17 +73,17 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
               </div>
             ))}
 
-          <div className="mt-10 flex items-center justify-between">
-            <p className="font-bold">Total:</p>
-            <span className="text-red-500 font-bold">
+          <div className="mt-10 flex items-center w-full justify-between">
+            <p className="font-bold text-xl">Total:</p>
+            <span className="text-red-500 font-bold text-xl">
               R$ {totalPrecos.toFixed(2).replace('.', ',')}
             </span>
           </div>
         </div>
 
-
-        <div>
-          <h2>Dados do Pedido</h2>
+        {/*Dados do pedido*/}
+        <div className='p-10'>
+          <h2 className='font-bold text-2xl mb-8'>Dados do Pedido</h2>
           <form className="flex flex-col gap-3">
             <input
               type="text"
@@ -119,7 +119,7 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
 
           <button
             onClick={enviarWhatsApp}
-            className="bg-green-500 font-bold text-white w-full px-4 py-2 rounded mt-5"
+            className="bg-green-500 font-bold text-white w-full px-4 py-4 rounded mt-5"
           >
             Enviar pedido pelo WhatsApp
           </button>
