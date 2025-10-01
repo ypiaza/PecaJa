@@ -64,7 +64,7 @@ const App = () => {
   const totalItens = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
 
   // Total de preço considerando a quantidade de cada produto
-  const totalPreco = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
+  const totalPreco = carrinho.reduce((acc, item) => acc + item.price * item.quantidade, 0);
 
   return (
     <div className='relative flex flex-col h-screen items-center justify-center bg-black'>

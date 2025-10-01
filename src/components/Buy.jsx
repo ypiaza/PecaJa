@@ -64,9 +64,9 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
                 key={item.id}
                 className="flex items-center justify-between w-full mb-1"
               >
-                <p className='font-bold text-xl'>{item.quantidade || 1} x {item.nome}</p>
+                <p className='font-bold text-xl'>{item.quantidade || 1} x {item.name}</p>
                 <span className='font-bold text-xl'>
-                  R$ {(item.preco * (item.quantidade || 1))
+                  R$ {(item.price * (item.quantidade || 1))
                     .toFixed(2)
                     .replace('.', ',')}
                 </span>
