@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CgClose } from 'react-icons/cg';
-import Header from './Header';
+import { supabase } from '../supabaseClient'; // 🔹 importe o client
 
 const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
   const [confirm, setConfirm] = useState(false);
@@ -8,13 +8,47 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
   const [telefone, setTelefone] = useState('');
   const [endereco, setEndereco] = useState('');
   const [obs, setObs] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const enviarWhatsApp = () => {
+  // 🔹 salva no banco Supabase
+  const enviarPedidoSupabase = async () => {
+    setLoading(true);
+
+    const { data, error } = await supabase.from('orders').insert([
+      {
+        customer_name: nome,
+        customer_phone: telefone,
+        customer_address: endereco,
+        obs: obs,
+        items: totalItens, // array de produtos (JSON)
+        total: totalPrecos,
+        status: 'pendente',
+      },
+    ]);
+
+    setLoading(false);
+
+    if (error) {
+      console.error('Erro ao salvar pedido:', error);
+      alert('Erro ao salvar o pedido no sistema.');
+      return false;
+    }
+
+    console.log('Pedido salvo:', data);
+    return true;
+  };
+
+  const enviarWhatsApp = async () => {
     if (!nome || !telefone || !endereco) {
       alert('Por favor, preencha todos os campos obrigatórios!');
       return;
     }
 
+    // 🔹 salva primeiro no banco
+    const ok = await enviarPedidoSupabase();
+    if (!ok) return;
+
+    // 🔹 depois monta a mensagem para WhatsApp
     let mensagem = `Olá, gostaria de fazer o pedido:\n\n`;
 
     totalItens.forEach((item) => {
@@ -39,14 +73,16 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
   return (
     <div
       onClick={() => setIsActive(false)}
-      className={`absolute inset-0 flex items-center justify-center pt-15 ${isActive || confirm ? '' : 'hidden'
-        }`}
+      className={`absolute inset-0 flex items-center justify-center pt-15 ${
+        isActive || confirm ? '' : 'hidden'
+      }`}
     >
       {/* Modal de Itens */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`bg-white h-full w-full rounded-t-2xl relative grid grid-cols-1 grid-rows-2 ${!confirm ? '' : 'hidden'
-          }`}
+        className={`bg-white h-full w-full rounded-t-2xl relative grid grid-cols-1 grid-rows-2 ${
+          !confirm ? '' : 'hidden'
+        }`}
       >
         <span
           onClick={() => setIsActive(false)}
@@ -55,23 +91,26 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
           <CgClose />
         </span>
 
-        <div className='flex flex-col items-start justify-evenly w-full p-10'>
+        <div className="flex flex-col items-start justify-evenly w-full p-10">
           <p className="font-bold text-2xl">Pedido:</p>
           {totalItens.length === 0
             ? 'Nenhum item selecionado'
             : totalItens.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between w-full mb-1"
-              >
-                <p className='font-bold text-xl'>{item.quantidade || 1} x {item.name}</p>
-                <span className='font-bold text-xl'>
-                  R$ {(item.price * (item.quantidade || 1))
-                    .toFixed(2)
-                    .replace('.', ',')}
-                </span>
-              </div>
-            ))}
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between w-full mb-1"
+                >
+                  <p className="font-bold text-xl">
+                    {item.quantidade || 1} x {item.name}
+                  </p>
+                  <span className="font-bold text-xl">
+                    R${' '}
+                    {(item.price * (item.quantidade || 1))
+                      .toFixed(2)
+                      .replace('.', ',')}
+                  </span>
+                </div>
+              ))}
 
           <div className="mt-10 flex items-center w-full justify-between">
             <p className="font-bold text-xl">Total:</p>
@@ -81,9 +120,9 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
           </div>
         </div>
 
-        {/*Dados do pedido*/}
-        <div className='p-10'>
-          <h2 className='font-bold text-2xl mb-8'>Dados do Pedido</h2>
+        {/* Dados do pedido */}
+        <div className="p-10">
+          <h2 className="font-bold text-2xl mb-8">Dados do Pedido</h2>
           <form className="flex flex-col gap-3">
             <input
               type="text"
@@ -119,9 +158,10 @@ const Buy = ({ totalItens, totalPrecos, isActive, setIsActive }) => {
 
           <button
             onClick={enviarWhatsApp}
-            className="bg-green-500 font-bold text-white w-full px-4 py-4 rounded mt-5"
+            disabled={loading}
+            className="bg-green-500 font-bold text-white w-full px-4 py-4 rounded mt-5 disabled:opacity-50"
           >
-            Enviar pedido pelo WhatsApp
+            {loading ? 'Salvando pedido...' : 'Enviar pedido pelo WhatsApp'}
           </button>
         </div>
       </div>
